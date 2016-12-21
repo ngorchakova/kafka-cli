@@ -1,4 +1,4 @@
-package gorchakova.kafka.shell.model;
+package gorchakova.kafka.cli.model;
 
 import org.springframework.stereotype.Component;
 

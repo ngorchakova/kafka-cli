@@ -1,6 +1,6 @@
-package gorchakova.kafka.shell.action;
+package gorchakova.kafka.cli.action;
 
-import gorchakova.kafka.shell.model.KafkaConnectionConfigHolder;
+import gorchakova.kafka.cli.model.KafkaConnectionConfigHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.core.CommandMarker;
 import org.springframework.shell.core.annotation.CliAvailabilityIndicator;

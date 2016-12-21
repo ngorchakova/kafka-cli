@@ -1,4 +1,4 @@
-package gorchakova.kafka.shell.config;
+package gorchakova.kafka.cli.config;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;

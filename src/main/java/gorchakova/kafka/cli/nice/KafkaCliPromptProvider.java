@@ -1,4 +1,4 @@
-package gorchakova.kafka.shell.nice;
+package gorchakova.kafka.cli.nice;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
