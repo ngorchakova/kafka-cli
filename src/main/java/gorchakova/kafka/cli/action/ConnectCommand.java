@@ -13,10 +13,7 @@ import org.springframework.stereotype.Component;
  * @since 21.12.2016.
  */
 @Component
-public class ConnectCommand implements CommandMarker {
-
-    @Autowired
-    private KafkaConnectionConfigHolder configHolder;
+public class ConnectCommand extends AbstractKafkaCommand {
 
     @CliAvailabilityIndicator({"connect"})
     public boolean isConnectAvailable() {
@@ -25,9 +22,9 @@ public class ConnectCommand implements CommandMarker {
 
 
     @CliCommand(value = "connect", help = "Set broker list for future operations")
-    public String simple(
+    public String connect(
             @CliOption(key = {"brokerList"}, mandatory = true, help = "brokerList") final String brokerList) {
-        configHolder.setBrokerList(brokerList);
+        setBrokerList(brokerList);
         return "broker list was changed to " + brokerList;
     }
 }

@@ -13,7 +13,11 @@
         <java.version>1.8</java.version>
         <spring-shell.version>1.2.0.RELEASE</spring-shell.version>
         <log4j.version>1.2.17</log4j.version>
+        <slf4j.version>1.7.21</slf4j.version>
         <spring-boot.version>1.4.2.RELEASE</spring-boot.version>
+
+        <!-- the last compatible version for kafka 9-->
+        <spring-kafka.version>1.0.3.RELEASE</spring-kafka.version>
     </properties>
 
 
@@ -23,13 +27,44 @@
             <artifactId>spring-shell</artifactId>
             <version>${spring-shell.version}</version>
         </dependency>
+
+        <!-- kafka -->
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+            <version>${spring-kafka.version}</version>
+        </dependency>
+
+        <!-- logging -->
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>${log4j.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jul-to-slf4j</artifactId>
+            <version>${slf4j.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>${slf4j.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
     </dependencies>
+
 
     <build>
         <plugins>
