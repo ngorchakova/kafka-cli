@@ -2,7 +2,7 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-    <groupId>gorchakova.kafka.cli</groupId>
+    <groupId>org.kafka-cli</groupId>
     <artifactId>kafka-cli</artifactId>
     <version>0.1-SNAPSHOT</version>
     <name>Kafka command line tool</name>
@@ -81,7 +81,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
                 <configuration>
-                    <mainClass>gorchakova.kafka.cli.KafkaCli</mainClass>
+                    <mainClass>org.kafka.cli.KafkaCli</mainClass>
                 </configuration>
                 <executions>
                     <execution>

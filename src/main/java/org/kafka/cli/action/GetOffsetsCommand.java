@@ -1,4 +1,4 @@
-package gorchakova.kafka.cli.action;
+package org.kafka.cli.action;
 
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.PartitionInfo;

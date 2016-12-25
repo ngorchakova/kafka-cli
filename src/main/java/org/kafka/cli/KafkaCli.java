@@ -1,4 +1,4 @@
-package gorchakova.kafka.cli;
+package org.kafka.cli;
 
 
 import org.springframework.shell.Bootstrap;
