@@ -17,11 +17,12 @@ public class ConnectCommand extends AbstractKafkaCommand {
         return true;
     }
 
-
-    @CliCommand(value = "connect", help = "Set broker list for future operations")
+    @CliCommand(value = "connect", help = "Set brokerList and zookeeper for future operations")
     public String connect(
-            @CliOption(key = {"brokerList"}, mandatory = true, help = "brokerList") final String brokerList) {
+            @CliOption(key = {"brokerList"}, mandatory = true, help = "brokerList") final String brokerList,
+            @CliOption(key = {"zookeeper"}, mandatory = true, help = "zookeeper") final String zookeeper) {
         setBrokerList(brokerList);
+        setZookeeper(zookeeper);
         return "broker list was changed to " + brokerList;
     }
 }
