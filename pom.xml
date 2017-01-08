@@ -11,11 +11,13 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <scala.version>2.10</scala.version>
+        <scala.binary.version>2.10</scala.binary.version>
+        <scala.version>2.10.6</scala.version>
         <spring-shell.version>1.2.0.RELEASE</spring-shell.version>
         <log4j.version>1.2.17</log4j.version>
         <slf4j.version>1.7.21</slf4j.version>
         <spring-boot.version>1.4.2.RELEASE</spring-boot.version>
+        <scopt.version>3.5.0</scopt.version>
 
         <kafka.version>0.9.0.1</kafka.version>
         <!-- the last compatible version for kafka 9-->
@@ -25,15 +27,25 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>${scala.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.shell</groupId>
             <artifactId>spring-shell</artifactId>
             <version>${spring-shell.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.github.scopt</groupId>
+            <artifactId>scopt_${scala.binary.version}</artifactId>
+            <version>${scopt.version}</version>
+        </dependency>
         <!-- kafka -->
         <dependency>
             <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka_${scala.version}</artifactId>
+            <artifactId>kafka_${scala.binary.version}</artifactId>
             <version>${kafka.version}</version>
         </dependency>
         <dependency>
@@ -97,6 +109,25 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <args>
+                        <!-- work-around for https://issues.scala-lang.org/browse/SI-8358 -->
+                        <arg>-nobootcp</arg>
+                    </args>
+                </configuration>
             </plugin>
         </plugins>
     </build>
