@@ -15,14 +15,15 @@ private[commands] case class DescribeTopicActionConfig(bootstrapServer: String =
 
 object DescribeTopicAction extends CommandLineActionFactory {
 
+  val Parser: OptionParser[DescribeTopicActionConfig] = new OptionParser[DescribeTopicActionConfig]("describeTopic") {
+    opt[String]('t', "topic").required().action((t, c) =>
+      c.copy(topic = t)).text("topic name")
+    opt[String]('b', "bootstrap").required().action((s, c) =>
+      c.copy(bootstrapServer = s)).text("bootstrap service list")
+  }
+
   override def createAction(args: Seq[String]): Option[CommandLineAction] = {
-    val parser: OptionParser[DescribeTopicActionConfig] = new OptionParser[DescribeTopicActionConfig]("describeTopic") {
-      opt[String]('t', "topic").required().action((t, c) =>
-        c.copy(topic = t)).text("topic name")
-      opt[String]('b', "bootstrap").required().action((s, c) =>
-        c.copy(bootstrapServer = s)).text("bootstrap service list")
-    }
-    parser.parse(args, DescribeTopicActionConfig()) match {
+    Parser.parse(args, DescribeTopicActionConfig()) match {
       case Some(config) => Some(new DescribeTopicAction(config))
       case None => None
     }

@@ -1,6 +1,6 @@
 package org.kafka.cli
 
-import org.kafka.cli.commands.{ListTopicsAction, DescribeTopicAction}
+import org.kafka.cli.commands.{GetOffsetsAction, ListTopicsAction, DescribeTopicAction}
 
 /**
  * @author Natalia Gorchakova
@@ -18,7 +18,8 @@ object CommandLineAction {
 
   private val ActionMapping = Map(
     "describe" -> DescribeTopicAction,
-    "topicList" -> ListTopicsAction
+    "topicList" -> ListTopicsAction,
+    "getOffsets" -> GetOffsetsAction
   )
 
   def unapply(line: String): Option[CommandLineAction] = {

@@ -13,14 +13,16 @@ class ListTopicsAction(val config: ListTopicsActionConfig) extends CommandLineAc
 
 private[commands] case class ListTopicsActionConfig(bootstrapServer: String = null)
 
-object DescribeTopicAction extends CommandLineActionFactory {
+object ListTopicsAction extends CommandLineActionFactory {
+
+  val Parser: OptionParser[ListTopicsActionConfig] = new OptionParser[ListTopicsActionConfig]("list all topics") {
+    opt[String]('b', "bootstrap").required().action((s, c) =>
+      c.copy(bootstrapServer = s)).text("bootstrap service list")
+  }
 
   override def createAction(args: Seq[String]): Option[CommandLineAction] = {
-    val parser: OptionParser[ListTopicsActionConfig] = new OptionParser[ListTopicsActionConfig]("describeTopic") {
-      opt[String]('b', "bootstrap").required().action((s, c) =>
-        c.copy(bootstrapServer = s)).text("bootstrap service list")
-    }
-    parser.parse(args, new ListTopicsActionConfig()) match {
+
+    Parser.parse(args, new ListTopicsActionConfig()) match {
       case Some(config) => Some(new ListTopicsAction(config))
       case None => None
     }
