@@ -1,12 +1,9 @@
 package org.kafka.cli
 
-import java.io.File
-import scopt.OptionParser
-
 /**
- * @author Natalia Gorchakova
- * @since  03.01.2017
- */
+  * @author Natalia Gorchakova
+  * @since 03.01.2017
+  */
 object KafkaCli {
 
 
@@ -14,8 +11,9 @@ object KafkaCli {
     var continue = true
 
     while (continue) {
+      prepareLine()
       val line = readLine()
-      continue = line!=null && line!="exit"
+      continue = line != null && line != "exit"
 
       if (continue) {
         processAction(line)
@@ -24,10 +22,12 @@ object KafkaCli {
   }
 
   def processAction(line: String) {
-    line match{
+    line match {
       case CommandLineAction(a) => a.perform()
-      case _ => println("unknown")
+      case _ => println("unknown action")
     }
   }
+
+  def prepareLine() = print("kafka-cli> ")
 
 }
