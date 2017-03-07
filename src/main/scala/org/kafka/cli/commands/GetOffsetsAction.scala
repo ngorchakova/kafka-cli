@@ -6,7 +6,7 @@ import org.apache.kafka.clients.consumer.{ConsumerConfig, KafkaConsumer}
 import org.apache.kafka.common.TopicPartition
 import org.kafka.cli.utils.TryWithClosable
 import org.kafka.cli.{CommandLineAction, CommandLineActionFactory}
-import scopt.OptionParser
+import scopt.{OptionParser, RenderingMode}
 
 import scala.collection.JavaConversions._
 
@@ -69,10 +69,12 @@ object GetOffsetsAction extends CommandLineActionFactory {
 
   override def createAction(args: Seq[String]): Option[CommandLineAction] = {
 
-    Parser.parse(args, new GetOffsetsActionConfig()) match {
+    Parser.parse(args, GetOffsetsActionConfig()) match {
       case Some(config) => Some(new GetOffsetsAction(config))
       case None => None
     }
   }
+
+  override def renderUsage(mode: RenderingMode): String = Parser.renderUsage(mode)
 }
 

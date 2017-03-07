@@ -1,12 +1,14 @@
 package org.kafka.cli
 
-import org.kafka.cli.commands.{GetOffsetsAction, ListTopicsAction, DescribeTopicAction}
+import org.kafka.cli.commands._
+import scopt.{OptionParser, RenderingMode}
 
 /**
  * @author Natalia Gorchakova
  * @since  08.01.2017
  */
 trait CommandLineActionFactory {
+  def renderUsage(mode: RenderingMode): String
   def createAction(args: Seq[String]): Option[CommandLineAction]
 }
 
@@ -19,8 +21,13 @@ object CommandLineAction {
   private val ActionMapping = Map(
     "describe" -> DescribeTopicAction,
     "topicList" -> ListTopicsAction,
-    "getOffsets" -> GetOffsetsAction
+    "getOffsets" -> GetOffsetsAction,
+    "deleteGroup" -> DeleteConsumerGroupAction
   )
+
+  def printHelp(): Unit = {
+    ActionMapping.values.map(_.renderUsage(RenderingMode.TwoColumns)).foreach(println)
+  }
 
   def unapply(line: String): Option[CommandLineAction] = {
     val args = line.split(" ")

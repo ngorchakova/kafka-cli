@@ -42,6 +42,7 @@ object KafkaCli {
 
     def processAction(line: String) {
       line match {
+        case "help" => CommandLineAction.printHelp()
         case CommandLineAction(a) => a.perform()
         case _ => println("unknown action")
       }

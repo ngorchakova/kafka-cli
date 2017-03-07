@@ -5,8 +5,9 @@ import kafka.server.ConfigType
 import kafka.utils.ZkUtils
 import org.apache.kafka.common.security.JaasUtils
 import org.kafka.cli.{CommandLineAction, CommandLineActionFactory}
-import scopt.OptionParser
+import scopt.{OptionParser, RenderingMode}
 import java.util.Properties
+
 import scala.collection.JavaConversions._
 
 /**
@@ -71,9 +72,12 @@ object DescribeTopicAction extends CommandLineActionFactory {
   }
 
   override def createAction(args: Seq[String]): Option[CommandLineAction] = {
+    Parser.showTryHelp()
     Parser.parse(args, DescribeTopicActionConfig()) match {
       case Some(config) => Some(new DescribeTopicAction(config))
       case None => None
     }
   }
+
+  override def renderUsage(mode: RenderingMode): String = Parser.renderUsage(mode)
 }

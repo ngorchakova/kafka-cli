@@ -3,7 +3,7 @@ package org.kafka.cli.commands
 import kafka.utils.ZkUtils
 import org.apache.kafka.common.security.JaasUtils
 import org.kafka.cli.{CommandLineAction, CommandLineActionFactory}
-import scopt.OptionParser
+import scopt.{OptionParser, RenderingMode}
 
 /**
   * @author Natalia Gorchakova
@@ -47,4 +47,6 @@ object ListTopicsAction extends CommandLineActionFactory {
       case None => None
     }
   }
+
+  override def renderUsage(mode: RenderingMode): String = Parser.renderUsage(mode)
 }
