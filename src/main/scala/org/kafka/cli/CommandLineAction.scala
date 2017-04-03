@@ -1,7 +1,7 @@
 package org.kafka.cli
 
 import org.kafka.cli.commands._
-import scopt.{OptionParser, RenderingMode}
+import scopt.RenderingMode
 
 /**
  * @author Natalia Gorchakova
@@ -22,7 +22,8 @@ object CommandLineAction {
     "describe" -> DescribeTopicAction,
     "topicList" -> ListTopicsAction,
     "getOffsets" -> GetOffsetsAction,
-    "deleteGroup" -> DeleteConsumerGroupAction
+    "deleteGroup" -> DeleteConsumerGroupAction,
+    "seekToBegin" -> SeekToBeginAction
   )
 
   def printHelp(): Unit = {
