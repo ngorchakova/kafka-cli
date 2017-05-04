@@ -14,8 +14,6 @@ import scala.collection.JavaConversions._
   */
 class SeekToBeginAction(val config: SeekToBeginActionConfig) extends CommandLineAction with TryWithClosable {
 
-  private val MaxWaitMs = 1000
-
   override def perform(): Unit = {
     tryWith(new KafkaConsumer[String, String](createConsumerConfig(config.brokerList, config.groupId))) {
       consumer => {

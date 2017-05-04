@@ -23,7 +23,8 @@ object CommandLineAction {
     "topicList" -> ListTopicsAction,
     "getOffsets" -> GetOffsetsAction,
     "deleteGroup" -> DeleteConsumerGroupAction,
-    "seekToBegin" -> SeekToBeginAction
+    "seekToBegin" -> SeekToBeginAction,
+    "consumerOffsets" -> GetConsumerOffsetsAction
   )
 
   def printHelp(): Unit = {
