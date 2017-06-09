@@ -24,7 +24,8 @@ object CommandLineAction {
     "getOffsets" -> GetOffsetsAction,
     "deleteGroup" -> DeleteConsumerGroupAction,
     "seekToBegin" -> SeekToBeginAction,
-    "consumerOffsets" -> GetConsumerOffsetsAction
+    "consumerOffsets" -> GetConsumerOffsetsAction,
+    "getMessage" -> GetMessageAction
   )
 
   def printHelp(): Unit = {

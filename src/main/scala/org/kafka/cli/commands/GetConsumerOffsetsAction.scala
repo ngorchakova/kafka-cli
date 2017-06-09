@@ -49,6 +49,7 @@ class GetConsumerOffsetsAction (val config: GetConsumerOffsetsConfig) extends Co
   def createConsumerConfig(brokers: String, groupId: String): Properties = {
     val props = new Properties()
     props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers)
+    props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
     props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId)
     props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer")
     props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer")
