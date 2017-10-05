@@ -28,6 +28,7 @@ class GetMessageAction(val config: GetMessageConfig) extends CommandLineAction w
 
         val messages = consumer.poll(10000)
         messages.headOption.foreach(r => {
+          println(s"real offset: ${r.offset()}")
           println(s"key: ${r.key}")
           println(s"${r.value()}")
         })
@@ -61,7 +62,7 @@ private[commands] case class GetMessageConfig(brokerList: String = null,
 
 object GetMessageAction extends CommandLineActionFactory {
 
-  val Parser: OptionParser[GetMessageConfig] = new OptionParser[GetMessageConfig]("consumerOffsets") {
+  val Parser: OptionParser[GetMessageConfig] = new OptionParser[GetMessageConfig]("getMessage") {
     opt[String]('b', "brokerList").required().action((s, c) =>
       c.copy(brokerList = s)).text("broker servers list")
     opt[String]('t', "topic").required().action((s, c) =>

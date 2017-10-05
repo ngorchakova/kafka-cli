@@ -32,7 +32,7 @@ private[commands] case class ListTopicsActionConfig(zookeeper: String = null, to
 
 object ListTopicsAction extends CommandLineActionFactory {
 
-  val Parser: OptionParser[ListTopicsActionConfig] = new OptionParser[ListTopicsActionConfig]("list all topics") {
+  val Parser: OptionParser[ListTopicsActionConfig] = new OptionParser[ListTopicsActionConfig]("topicList") {
     opt[String]('z', "zookeeper").required().action((s, c) =>
       c.copy(zookeeper = s)).text("zookeeper connect url")
 

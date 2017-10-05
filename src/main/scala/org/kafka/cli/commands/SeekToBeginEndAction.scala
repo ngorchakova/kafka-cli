@@ -12,7 +12,7 @@ import scala.collection.JavaConversions._
 /**
   * @author menshin on 4/3/17.
   */
-class SeekToBeginAction(val config: SeekToBeginActionConfig) extends CommandLineAction with TryWithClosable {
+class SeekToBeginEndAction(val config: SeekToBeginEndActionConfig) extends CommandLineAction with TryWithClosable {
 
   override def perform(): Unit = {
     tryWith(new KafkaConsumer[String, String](createConsumerConfig(config.brokerList, config.groupId))) {
@@ -25,7 +25,12 @@ class SeekToBeginAction(val config: SeekToBeginActionConfig) extends CommandLine
                 val topicPartition = new TopicPartition(pi.topic(), pi.partition())
 
                 consumer.assign(List(topicPartition))
-                consumer.seekToBeginning()
+                if (config.toBegin) {
+                  consumer.seekToBeginning()
+                } else {
+                  consumer.seekToEnd()
+                }
+
                 val firstOffset = consumer.position(topicPartition)
                 consumer.commitSync()
 
@@ -53,14 +58,15 @@ class SeekToBeginAction(val config: SeekToBeginActionConfig) extends CommandLine
 }
 
 
-private[commands] case class SeekToBeginActionConfig(brokerList: String = null,
-                                                     topic: String = null,
-                                                     groupId: String = null,
-                                                     partitions: Set[Int] = Set.empty)
+private[commands] case class SeekToBeginEndActionConfig(brokerList: String = null,
+                                                        topic: String = null,
+                                                        groupId: String = null,
+                                                        partitions: Set[Int] = Set.empty,
+                                                        toBegin: Boolean = true)
 
-object SeekToBeginAction extends CommandLineActionFactory {
+object SeekToBeginEndAction extends CommandLineActionFactory {
 
-  val Parser: OptionParser[SeekToBeginActionConfig] = new OptionParser[SeekToBeginActionConfig]("seekToBegin") {
+  val Parser: OptionParser[SeekToBeginEndActionConfig] = new OptionParser[SeekToBeginEndActionConfig]("SeekToBeginEnd") {
     opt[String]('b', "brokerList").required().action((s, c) =>
       c.copy(brokerList = s)).text("broker servers list")
     opt[String]('t', "topic").required().action((s, c) =>
@@ -69,12 +75,14 @@ object SeekToBeginAction extends CommandLineActionFactory {
       c.copy(groupId = s)).text("consumer group id")
     opt[String]('p', "partitions").action((s, c) =>
       c.copy(partitions = s.split(",").map(_.toInt).toSet)).text("comma separated list of partitions")
+    opt[String]('b', "toBegin").required().action((s, c) =>
+      c.copy(groupId = s)).text("true - from begin; faslse - to end")
   }
 
   override def createAction(args: Seq[String]): Option[CommandLineAction] = {
 
-    Parser.parse(args, SeekToBeginActionConfig()) match {
-      case Some(config) => Some(new SeekToBeginAction(config))
+    Parser.parse(args, SeekToBeginEndActionConfig()) match {
+      case Some(config) => Some(new SeekToBeginEndAction(config))
       case None => None
     }
   }

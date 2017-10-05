@@ -23,7 +23,7 @@ object CommandLineAction {
     "topicList" -> ListTopicsAction,
     "getOffsets" -> GetOffsetsAction,
     "deleteGroup" -> DeleteConsumerGroupAction,
-    "seekToBegin" -> SeekToBeginAction,
+    "seekToBeginEnd" -> SeekToBeginEndAction,
     "consumerOffsets" -> GetConsumerOffsetsAction,
     "getMessage" -> GetMessageAction
   )
