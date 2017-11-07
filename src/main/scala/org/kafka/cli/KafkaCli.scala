@@ -1,6 +1,5 @@
 package org.kafka.cli
 
-import jline.History
 import org.jline.reader.LineReaderBuilder
 import org.jline.terminal.TerminalBuilder
 

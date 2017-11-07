@@ -26,9 +26,9 @@ class SeekToBeginEndAction(val config: SeekToBeginEndActionConfig) extends Comma
 
                 consumer.assign(List(topicPartition))
                 if (config.toBegin) {
-                  consumer.seekToBeginning()
+                  consumer.seekToBeginning(List(topicPartition))
                 } else {
-                  consumer.seekToEnd()
+                  consumer.seekToEnd(List(topicPartition))
                 }
 
                 val firstOffset = consumer.position(topicPartition)

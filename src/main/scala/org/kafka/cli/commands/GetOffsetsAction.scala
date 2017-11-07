@@ -27,10 +27,10 @@ class GetOffsetsAction(val config: GetOffsetsActionConfig) extends CommandLineAc
           val topicPartition = new TopicPartition(pi.topic(), pi.partition())
 
           consumer.assign(List(topicPartition))
-          consumer.seekToBeginning()
+          consumer.seekToBeginning(List(topicPartition))
           val firstOffset = consumer.position(topicPartition)
 
-          consumer.seekToEnd()
+          consumer.seekToEnd(List(topicPartition))
           val lastOffset = consumer.position(topicPartition)
 
           println(s"${pi.topic}:${pi.partition} => $firstOffset:$lastOffset")

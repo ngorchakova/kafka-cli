@@ -35,8 +35,8 @@ class DeleteConsumerGroupAction(val config: DeleteConsumerGroupActionConfig) ext
             val offsetKeys = partitions.map(partition => {
               KafkaOffsetTopicManager.offsetCommitKey(config.group, config.topic, partition)
             })
-            val offsetTopicPartition = TopicAndPartition(GroupCoordinator.GroupMetadataTopicName, KafkaOffsetTopicManager.partitionFor(config.group, offsetsPartitionsCount))
-            println(s"messages will go to $offsetTopicPartition")
+            /*val offsetTopicPartition = TopicAndPartition(GroupCoordinator.GroupMetadataTopicName, KafkaOffsetTopicManager.partitionFor(config.group, offsetsPartitionsCount))
+            println(s"messages will go to $offsetTopicPartition")*/
             //TODO: send messages
 
             println("ready to send kafka key with null values to delete consumer records")

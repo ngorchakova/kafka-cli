@@ -30,7 +30,7 @@ class GetConsumerOffsetsAction (val config: GetConsumerOffsetsConfig) extends Co
                   val currentOffset = consumer.position(topicPartition)
 
                   additionalConsumer.assign(List(topicPartition))
-                  additionalConsumer.seekToEnd()
+                  additionalConsumer.seekToEnd(List(topicPartition))
                   val lastOffset = additionalConsumer.position(topicPartition)
                   val lag = lastOffset - currentOffset
                   println(s"current offset ${pi.topic}:${pi.partition} $currentOffset / $lastOffset lag=$lag")
