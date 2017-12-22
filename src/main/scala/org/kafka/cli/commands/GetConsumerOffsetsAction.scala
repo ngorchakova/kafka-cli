@@ -19,26 +19,23 @@ class GetConsumerOffsetsAction (val config: GetConsumerOffsetsConfig) extends Co
   override def perform(): Unit = {
     tryWith(new KafkaConsumer[String, String](createConsumerConfig(config.brokerList, config.groupId))) {
       consumer => {
+
         tryWith(new KafkaConsumer[String, String](createConsumerConfig(config.brokerList, AdditionalGroupId))) {
           additionalConsumer => {
-            Option.apply(consumer.partitionsFor(config.topic)) match {
-              case Some(partitions) =>
-                partitions.foreach(pi => {
-                  val topicPartition = new TopicPartition(pi.topic(), pi.partition())
 
-                  consumer.assign(List(topicPartition))
-                  val currentOffset = consumer.position(topicPartition)
+            consumer.subscribe(List(config.topic))
+            additionalConsumer.subscribe(List(config.topic))
+            consumer.poll(100)
+            additionalConsumer.poll(100)
+            additionalConsumer.seekToEnd(additionalConsumer.assignment())
 
-                  additionalConsumer.assign(List(topicPartition))
-                  additionalConsumer.seekToEnd(List(topicPartition))
-                  val lastOffset = additionalConsumer.position(topicPartition)
-                  val lag = lastOffset - currentOffset
-                  println(s"current offset ${pi.topic}:${pi.partition} $currentOffset / $lastOffset lag=$lag")
-                })
-                consumer.unsubscribe()
-              case None =>
-                println(s"failed to find topic ${config.topic}")
+            consumer.assignment().toList.foreach{tp =>
+              val currentOffset = consumer.position(tp)
+              val lastOffset = additionalConsumer.position(tp)
+              val lag = lastOffset - currentOffset
+              println(s"current offset ${tp.topic}:${tp.partition} $currentOffset / $lastOffset lag=$lag")
             }
+
           }
         }
       }

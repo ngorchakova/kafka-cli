@@ -21,11 +21,13 @@ class SeekToBeginEndAction(val config: SeekToBeginEndActionConfig) extends Comma
         consumer.subscribe(List(config.topic))
         consumer.poll(100)
         if (config.toBegin) {
+          println("seek to begin")
           consumer.seekToBeginning(consumer.assignment())
         } else {
+          println("seek to end")
           consumer.seekToEnd(consumer.assignment())
         }
-
+        consumer.poll(100)
         consumer.commitSync()
 
         consumer.assignment().toList.foreach{tp =>
@@ -68,8 +70,8 @@ object SeekToBeginEndAction extends CommandLineActionFactory {
       c.copy(groupId = s)).text("consumer group id")
     opt[String]('p', "partitions").action((s, c) =>
       c.copy(partitions = s.split(",").map(_.toInt).toSet)).text("comma separated list of partitions")
-    opt[String]('b', "toBegin").required().action((s, c) =>
-      c.copy(groupId = s)).text("true - from begin; faslse - to end")
+    opt[Boolean]('o', "toBegin").required().action((s, c) =>
+      c.copy(toBegin = s)).text("true - from begin; false - to end")
   }
 
   override def createAction(args: Seq[String]): Option[CommandLineAction] = {
