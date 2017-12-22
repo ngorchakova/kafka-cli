@@ -17,29 +17,22 @@ class SeekToBeginEndAction(val config: SeekToBeginEndActionConfig) extends Comma
   override def perform(): Unit = {
     tryWith(new KafkaConsumer[String, String](createConsumerConfig(config.brokerList, config.groupId))) {
       consumer => {
-        Option.apply(consumer.partitionsFor(config.topic)) match {
-          case Some(partitions) =>
-            partitions
-              .filter(pi => config.partitions.isEmpty || config.partitions.contains(pi.partition()))
-              .foreach(pi => {
-                val topicPartition = new TopicPartition(pi.topic(), pi.partition())
 
-                consumer.assign(List(topicPartition))
-                if (config.toBegin) {
-                  consumer.seekToBeginning(List(topicPartition))
-                } else {
-                  consumer.seekToEnd(List(topicPartition))
-                }
-
-                val firstOffset = consumer.position(topicPartition)
-                consumer.commitSync()
-
-                println(s"reset offset ${pi.topic}:${pi.partition} to $firstOffset")
-              })
-            consumer.unsubscribe()
-          case None =>
-            println(s"failed to find topic ${config.topic}")
+        consumer.subscribe(List(config.topic))
+        consumer.poll(100)
+        if (config.toBegin) {
+          consumer.seekToBeginning(consumer.assignment())
+        } else {
+          consumer.seekToEnd(consumer.assignment())
         }
+
+        consumer.commitSync()
+
+        consumer.assignment().toList.foreach{tp =>
+          val currentPosition = consumer.position(tp)
+          println(s"reset offset ${tp.topic}:${tp.partition} to $currentPosition")
+        }
+
       }
     }
 
