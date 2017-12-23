@@ -1,12 +1,16 @@
 package org.kafka.cli.commands
 
+import java.util
 import java.util.Properties
+import java.util.regex.Pattern
 
-import org.apache.kafka.clients.consumer.{ConsumerConfig, KafkaConsumer}
+import org.apache.kafka.clients.consumer.internals.NoOpConsumerRebalanceListener
+import org.apache.kafka.clients.consumer.{ConsumerConfig, ConsumerRebalanceListener, KafkaConsumer}
 import org.apache.kafka.common.TopicPartition
 import org.kafka.cli.{CommandLineAction, CommandLineActionFactory}
 import org.kafka.cli.utils.TryWithClosable
 import scopt.{OptionParser, RenderingMode}
+
 import scala.collection.JavaConversions._
 
 /**
@@ -18,7 +22,11 @@ class SeekToBeginEndAction(val config: SeekToBeginEndActionConfig) extends Comma
     tryWith(new KafkaConsumer[String, String](createConsumerConfig(config.brokerList, config.groupId))) {
       consumer => {
 
-        consumer.subscribe(List(config.topic))
+        if (config.pattern) {
+          consumer.subscribe(Pattern.compile(config.topic), new NoOpConsumerRebalanceListener())
+        } else {
+          consumer.subscribe(List(config.topic))
+        }
         consumer.poll(100)
         if (config.toBegin) {
           println("seek to begin")
@@ -30,7 +38,7 @@ class SeekToBeginEndAction(val config: SeekToBeginEndActionConfig) extends Comma
         consumer.poll(100)
         consumer.commitSync()
 
-        consumer.assignment().toList.foreach{tp =>
+        consumer.assignment().toList.foreach { tp =>
           val currentPosition = consumer.position(tp)
           println(s"reset offset ${tp.topic}:${tp.partition} to $currentPosition")
         }
@@ -55,17 +63,20 @@ class SeekToBeginEndAction(val config: SeekToBeginEndActionConfig) extends Comma
 
 private[commands] case class SeekToBeginEndActionConfig(brokerList: String = null,
                                                         topic: String = null,
+                                                        pattern: Boolean = false,
                                                         groupId: String = null,
                                                         partitions: Set[Int] = Set.empty,
                                                         toBegin: Boolean = true)
 
 object SeekToBeginEndAction extends CommandLineActionFactory {
 
-  val Parser: OptionParser[SeekToBeginEndActionConfig] = new OptionParser[SeekToBeginEndActionConfig]("SeekToBeginEnd") {
+  val Parser: OptionParser[SeekToBeginEndActionConfig] = new OptionParser[SeekToBeginEndActionConfig]("seekToBeginEnd") {
     opt[String]('b', "brokerList").required().action((s, c) =>
       c.copy(brokerList = s)).text("broker servers list")
-    opt[String]('t', "topic").required().action((s, c) =>
+    opt[String]('t', "topic").optional().action((s, c) =>
       c.copy(topic = s)).text("topic name")
+    opt[Boolean]('m', "pattern").optional().action((s, c) =>
+      c.copy(pattern = s)).text("topic field should be treated as pattern")
     opt[String]('g', "groupId").required().action((s, c) =>
       c.copy(groupId = s)).text("consumer group id")
     opt[String]('p', "partitions").action((s, c) =>

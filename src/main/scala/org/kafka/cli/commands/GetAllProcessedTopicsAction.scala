@@ -17,7 +17,7 @@ import scala.collection.mutable
 /**
   * @author menshin on 12/23/17.
   */
-class GetAllProcessedTopicsAction (val config: GetAllProcessedTopicsActionConfig)  extends CommandLineAction with TryWithClosable{
+class GetAllProcessedTopicsAction(val config: GetAllProcessedTopicsActionConfig) extends CommandLineAction with TryWithClosable {
 
 
   private val AdditionalGroupId = "GetAllProcessedTopicsAction"
@@ -28,51 +28,49 @@ class GetAllProcessedTopicsAction (val config: GetAllProcessedTopicsActionConfig
     // read __offsets topic
     tryWith(new KafkaConsumer[Array[Byte], Array[Byte]](createConsumerConfig(config.brokerList, AdditionalGroupId))) {
       consumer => {
+        val topicOffset = mutable.Set[String]()
+
+        consumer.partitionsFor(OffsetTopic).foreach { pi =>
+          println(s"processing $pi")
+          val partition = new TopicPartition(pi.topic(), pi.partition())
+          consumer.assign(List(partition))
+
+          consumer.seekToEnd(List(partition))
+          val maxOffset = consumer.position(partition) - 1
+
+          consumer.seekToBeginning(List(partition))
 
 
-        consumer.subscribe(List(OffsetTopic))
-        consumer.poll(100)
-        val partitions: Set[TopicPartition] = consumer.assignment().toSet
-        println(s"consuming from $OffsetTopic topic and partitions ${partitions.mkString(", ")}")
-        consumer.seekToEnd(partitions)
+          var finish = false
+          while (!finish) {
 
-        // save till what partitions we would like to read __offsets topic
-        val maxOffsets = collection.mutable.Map() ++ partitions.map(p => (p.partition(), consumer.position(p)))
+            for (r <- consumer.poll(10000).iterator()) {
+              val key = GroupMetadataManager.readMessageKey(ByteBuffer.wrap(r.key()))
+              key match {
+                case offsetKey: OffsetKey =>
+                  val groupTopicPartition = offsetKey.key
 
-        consumer.seekToBeginning(partitions)
-
-        val topicOffset = mutable.Map[TopicPartition, Long]()
-
-        while (maxOffsets.nonEmpty){
-          val data = consumer.poll(10000)
-          for (r <- data.iterator()){
-            val key = GroupMetadataManager.readMessageKey(ByteBuffer.wrap(r.key()))
-            key match {
-              case offsetKey: OffsetKey =>
-                val groupTopicPartition = offsetKey.key
-
-                if (r.value() != null) {
-                  val value = GroupMetadataManager.readOffsetMessageValue(ByteBuffer.wrap(r.value))
-                  if (config.groupId == groupTopicPartition.group){
-                    //found our group
-                    val committedOffset = value.offset
-                    topicOffset.put(groupTopicPartition.topicPartition, committedOffset)
-
-                    //println(s"found ${groupTopicPartition.topicPartition} with offset $committedOffset")
+                  if (r.value() != null) {
+                    val value = GroupMetadataManager.readOffsetMessageValue(ByteBuffer.wrap(r.value))
+                    if (config.groupId == groupTopicPartition.group) {
+                      //found our group
+                      val committedOffset = value.offset
+                      topicOffset.add(groupTopicPartition.topicPartition.topic())
+                    }
                   }
-                }
+                case _ => // no-op
+              }
 
+              if (maxOffset <= r.offset()) {
+                finish = true
+              }
 
-              case _ => // no-op
             }
-
-            //check that we reached end of some partitions
-            maxOffsets.get(r.partition())
-              .filter(o => o-1<=r.offset())
-              .foreach{o => println(s"remove ${r.partition}"); maxOffsets.remove(r.partition())}
-
           }
         }
+
+        topicOffset.foreach(println(_))
+
       }
     }
   }
@@ -88,7 +86,7 @@ class GetAllProcessedTopicsAction (val config: GetAllProcessedTopicsActionConfig
 }
 
 private[commands] case class GetAllProcessedTopicsActionConfig(brokerList: String = null,
-                                                        groupId: String = null)
+                                                               groupId: String = null)
 
 object GetAllProcessedTopicsAction extends CommandLineActionFactory {
 
