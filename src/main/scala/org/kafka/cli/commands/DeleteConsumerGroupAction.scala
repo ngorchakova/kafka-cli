@@ -1,9 +1,5 @@
 package org.kafka.cli.commands
 
-import kafka.admin.AdminUtils
-import kafka.common.TopicAndPartition
-import kafka.coordinator.{GroupCoordinator, GroupMetadataManager}
-import kafka.server.ConfigType
 import kafka.utils.ZkUtils
 import org.apache.kafka.common.security.JaasUtils
 import org.kafka.cli.utils.KafkaOffsetTopicManager

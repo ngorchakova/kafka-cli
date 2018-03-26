@@ -17,9 +17,8 @@
         <org.jline3.version>3.5.1</org.jline3.version>
         <scopt.version>3.7.0</scopt.version>
 
-        <kafka.version>0.10.2.1</kafka.version>
-        <!-- the last compatible version for kafka 9-->
-        <spring-kafka.version>1.2.3.RELEASE</spring-kafka.version>
+        <kafka.version>0.11.0.2</kafka.version>
+        <spring-kafka.version>2.0.3.RELEASE</spring-kafka.version>
 
         <log4j.version>1.2.17</log4j.version>
         <slf4j.version>1.7.21</slf4j.version>

@@ -1,10 +1,9 @@
 package org.kafka.cli.commands
 
 import java.nio.ByteBuffer
-import java.nio.charset.StandardCharsets
 import java.util.Properties
 
-import kafka.coordinator.{GroupMetadataManager, OffsetKey}
+import kafka.coordinator.group.{GroupMetadataManager, OffsetKey}
 import org.apache.kafka.clients.consumer.{ConsumerConfig, KafkaConsumer}
 import org.apache.kafka.common.TopicPartition
 import org.kafka.cli.{CommandLineAction, CommandLineActionFactory}

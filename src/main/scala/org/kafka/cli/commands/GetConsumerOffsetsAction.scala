@@ -2,11 +2,14 @@ package org.kafka.cli.commands
 
 import java.util.Properties
 
+import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.clients.consumer.{ConsumerConfig, KafkaConsumer}
 import org.apache.kafka.common.TopicPartition
+import org.apache.kafka.common.config.SaslConfigs
 import org.kafka.cli.{CommandLineAction, CommandLineActionFactory}
 import org.kafka.cli.utils.TryWithClosable
 import scopt.{OptionParser, RenderingMode}
+
 import scala.collection.JavaConversions._
 
 /**
