@@ -1,14 +1,11 @@
 package org.kafka.cli.commands
 
-import java.util
-import java.util.Properties
 import java.util.regex.Pattern
 
+import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.clients.consumer.internals.NoOpConsumerRebalanceListener
-import org.apache.kafka.clients.consumer.{ConsumerConfig, ConsumerRebalanceListener, KafkaConsumer}
-import org.apache.kafka.common.TopicPartition
+import org.kafka.cli.utils.{ConsumerConfig, TryWithClosable}
 import org.kafka.cli.{CommandLineAction, CommandLineActionFactory}
-import org.kafka.cli.utils.TryWithClosable
 import scopt.{OptionParser, RenderingMode}
 
 import scala.collection.JavaConversions._
@@ -19,12 +16,15 @@ import scala.collection.JavaConversions._
 class SeekToBeginEndAction(val config: SeekToBeginEndActionConfig) extends CommandLineAction with TryWithClosable {
 
   override def perform(): Unit = {
-    tryWith(new KafkaConsumer[String, String](createConsumerConfig(config.brokerList, config.groupId))) {
+    val consumerConfig = ConsumerConfig(config.brokerList, config.groupId, config.additionalConfig)
+    tryWith(new KafkaConsumer[String, String](ConsumerConfig.createConsumerConfig(consumerConfig))) {
       consumer => {
 
         if (config.pattern) {
+          println(s"use pattern subscription ${config.topic}")
           consumer.subscribe(Pattern.compile(config.topic), new NoOpConsumerRebalanceListener())
         } else {
+          println(s"topic subscription ${config.topic}")
           consumer.subscribe(List(config.topic))
         }
         consumer.poll(100)
@@ -48,16 +48,6 @@ class SeekToBeginEndAction(val config: SeekToBeginEndActionConfig) extends Comma
 
   }
 
-  def createConsumerConfig(brokers: String, groupId: String): Properties = {
-    val props = new Properties()
-    props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers)
-    props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId)
-    props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer")
-    props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer")
-    props
-  }
-
-
 }
 
 
@@ -66,7 +56,8 @@ private[commands] case class SeekToBeginEndActionConfig(brokerList: String = nul
                                                         pattern: Boolean = false,
                                                         groupId: String = null,
                                                         partitions: Set[Int] = Set.empty,
-                                                        toBegin: Boolean = true)
+                                                        toBegin: Boolean = true,
+                                                        additionalConfig: Option[String] = None)
 
 object SeekToBeginEndAction extends CommandLineActionFactory {
 
@@ -83,6 +74,8 @@ object SeekToBeginEndAction extends CommandLineActionFactory {
       c.copy(partitions = s.split(",").map(_.toInt).toSet)).text("comma separated list of partitions")
     opt[Boolean]('o', "toBegin").required().action((s, c) =>
       c.copy(toBegin = s)).text("true - from begin; false - to end")
+    opt[String]('s', "securityConfig").optional().action((s, c) =>
+      c.copy(additionalConfig = Some(s))).text("Config with additonal security properties")
   }
 
   override def createAction(args: Seq[String]): Option[CommandLineAction] = {
